@@ -2,6 +2,7 @@ const { app, BrowserWindow ,Menu} = require('electron')
 const path =require('path')
 const url = require('url')
 const shell = require('electron').shell
+const ipc = require('electron').ipcMain
   // Keep a global reference of the window object, if you don't, the window will
   // be closed automatically when the JavaScript object is garbage collected.
   let win
@@ -12,9 +13,14 @@ const shell = require('electron').shell
   
     // and load the index.html of the app.
     win.loadFile('index.html')
+        // url.format({
+    //     pathname: path.join(__dirname, 'src/index.html'),
+    //     protocol: 'file:',
+    //     slashes: true
+    // }))
   
     // Open the DevTools.
-    // win.webContents.openDevTools()
+     //win.webContents.openDevTools()
   
     // Emitted when the window is closed.
     win.on('closed', () => {
@@ -34,6 +40,7 @@ const shell = require('electron').shell
                         shell.openExternal('http://coinmarketcap.com')
                     }
                 },
+                {type: 'separator'},
                 {
                     label: 'Exit',
                     click() {
@@ -41,6 +48,9 @@ const shell = require('electron').shell
                     }
                 }
             ]
+        },
+        {
+            label: 'Info'
         }
     ])
     Menu.setApplicationMenu(menu);
@@ -67,6 +77,8 @@ const shell = require('electron').shell
       createWindow()
     }
   })
-  
+  ipc.on('update-notify-value',function(event,arg){
+      win.webContents.send('targetPriceVal',arg)
+  })
   // In this file you can include the rest of your app's specific main process
   // code. You can also put them in separate files and require them here.
